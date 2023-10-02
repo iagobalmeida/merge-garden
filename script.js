@@ -28,8 +28,8 @@ let usingHoe = false;
 let usingHose = false;
 let animating = false;
 let animSpeeds = {
-  'slowest': 1250,
-  'slow': 500,
+  'slowest': 500,
+  'slow': 375,
   'default': 250,
   'fast': 125
 };
@@ -252,51 +252,32 @@ class Grid {
   }
   async verifyFood(index) {
     animating = true;
-    const { width, height } = this;
-    const [row, col] = this.indexRowCol(index);
     const food = this.getFood(index);
-    const stage = this.getStage(index);
+    
+    if (food == null) return;
+    const combinations = this.getCombinations(index).filter(onlyUnique);
+    let stageMax = -1;
+    const stageSum = combinations.reduce((acc, i) => {
+      const _stage = this.getStage(i);
+      acc += _stage;
+      stageMax = _stage > stageMax ? _stage : stageMax;
+      return acc;
+    }, 0);
 
-    if (stage >= 4) {
-      this.setFood(index, null);
-    } else {
+    const nextStage = Math.min(5, stageMax + Math.floor(stageSum / 3));
 
-      if (food == null) return;
-
-      let cursor = 1;
-      const upCombinations = [];
-      const downCombinations = [];
-      const leftCombinations = [];
-      const rightCombinations = [];
-
-      const combinations = this.getCombinations(index).filter(onlyUnique);
-
-
-
-      let stageMax = -1;
-      const stageSum = combinations.reduce((acc, i) => {
-        const _stage = this.getStage(i);
-        acc += _stage;
-        stageMax = _stage > stageMax ? _stage : stageMax;
-        return acc;
-      }, 0);
-
-      const nextStage = Math.min(5, stageMax + Math.floor(stageSum / 3));
-
-      if (combinations.length >= 3) {
-        combinations.forEach(i => {
-          if (i == index && food != 0) {
-            this.animatePoints(index, `${(nextStage - 1) * 20}%`);
-            this.foods[i].set(food, nextStage);
-          } else {
-            this.foods[i].set(null);
-          }
-        });
-      }
+    if (combinations.length >= 3) {
+      combinations.forEach(i => {
+        if (i == index && food != 0) {
+          if(nextStage != 5) this.animatePoints(index, `${(nextStage - 1) * 20}%`);
+          this.foods[i].set(food, nextStage);
+        } else {
+          this.foods[i].set(null);
+        }
+      });
     }
     this.domUpdateAll();
-    await sleep(animSpeeds.default);
-    await this.fallFood();
+    await sleep(animSpeeds.fast);
 
     if (this.getStage(index) >= 5) {
       this.addPoints(index, 1);
@@ -307,7 +288,7 @@ class Grid {
     }
 
     this.domUpdateAll();
-    await sleep(animSpeeds.default);
+    await sleep(animSpeeds.fast);
     await this.fallFood();
     this.domUpdateAll();
     animating = false;

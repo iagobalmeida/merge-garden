@@ -49,11 +49,13 @@ body {
   --bg-x: 0;
   --cell-size-neg: calc(var(--cell-size) * -1);
   --border-color: transparent;
+  border: 2px solid var(--border-color);
   image-rendering: pixelated;
   height: var(--cell-size);
   width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
 }
 
 .food-empty {
@@ -64,8 +66,6 @@ body {
   --bg-y: 0;
   --border-color: #f4f1de;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-0::after {
   content: "";
@@ -88,8 +88,6 @@ body {
   --bg-y: 1;
   --border-color: #eab69f;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-1::after, .tool .food::after {
   content: "";
@@ -112,8 +110,6 @@ body {
   --bg-y: 2;
   --border-color: #e07a5f;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-2::after {
   content: "";
@@ -136,8 +132,6 @@ body {
   --bg-y: 3;
   --border-color: #8f5d5d;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-3::after {
   content: "";
@@ -160,8 +154,6 @@ body {
   --bg-y: 4;
   --border-color: #3d405b;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-4::after {
   content: "";
@@ -184,8 +176,6 @@ body {
   --bg-y: 5;
   --border-color: #5f797b;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-5::after {
   content: "";
@@ -208,8 +198,6 @@ body {
   --bg-y: 6;
   --border-color: #81b29a;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-6::after {
   content: "";
@@ -232,8 +220,6 @@ body {
   --bg-y: 7;
   --border-color: #babf95;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-7::after {
   content: "";
@@ -256,8 +242,6 @@ body {
   --bg-y: 8;
   --border-color: #f2cc8f;
   --stage-percentage: 0%;
-  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
-  border: 2px solid var(--border-color);
 }
 .food-8::after {
   content: "";
@@ -278,94 +262,120 @@ body {
 
 .stage-0 {
   --bg-x: 0;
-  --stage-percentage: calc(calc(0 - 1) * 20%);
+  --stage-percentage: calc(0 * 16.66%);
 }
 .stage-0::after {
-  transform: scale(calc(1 * 20%));
+  transform: scale(calc(20% + 0 * 15%));
 }
 
 .stage-1 {
   --bg-x: 1;
-  --stage-percentage: calc(calc(1 - 1) * 20%);
+  --stage-percentage: calc(1 * 16.66%);
 }
 .stage-1::after {
-  transform: scale(calc(2 * 20%));
+  transform: scale(calc(20% + 1 * 15%));
 }
 
 .stage-2 {
   --bg-x: 2;
-  --stage-percentage: calc(calc(2 - 1) * 20%);
+  --stage-percentage: calc(2 * 16.66%);
 }
 .stage-2::after {
-  transform: scale(calc(3 * 20%));
+  transform: scale(calc(20% + 2 * 15%));
 }
 
 .stage-3 {
   --bg-x: 3;
-  --stage-percentage: calc(calc(3 - 1) * 20%);
+  --stage-percentage: calc(3 * 16.66%);
 }
 .stage-3::after {
-  transform: scale(calc(4 * 20%));
+  transform: scale(calc(20% + 3 * 15%));
 }
 
 .stage-4 {
   --bg-x: 4;
-  --stage-percentage: calc(calc(4 - 1) * 20%);
+  --stage-percentage: calc(4 * 16.66%);
 }
 .stage-4::after {
-  transform: scale(calc(5 * 20%));
+  transform: scale(calc(20% + 4 * 15%));
 }
 
 .stage-5 {
   --bg-x: 5;
-  --stage-percentage: calc(calc(5 - 1) * 20%);
+  --stage-percentage: calc(5 * 16.66%);
 }
 .stage-5::after {
-  transform: scale(calc(6 * 20%));
+  transform: scale(calc(20% + 5 * 15%));
 }
 
 .stage-6 {
   --bg-x: 6;
-  --stage-percentage: calc(calc(6 - 1) * 20%);
+  --stage-percentage: calc(6 * 16.66%);
 }
 .stage-6::after {
-  transform: scale(calc(7 * 20%));
+  transform: scale(calc(20% + 6 * 15%));
 }
 
 .stage-7 {
   --bg-x: 7;
-  --stage-percentage: calc(calc(7 - 1) * 20%);
+  --stage-percentage: calc(7 * 16.66%);
 }
 .stage-7::after {
-  transform: scale(calc(8 * 20%));
+  transform: scale(calc(20% + 7 * 15%));
 }
 
 .stage-8 {
   --bg-x: 8;
-  --stage-percentage: calc(calc(8 - 1) * 20%);
+  --stage-percentage: calc(8 * 16.66%);
 }
 .stage-8::after {
-  transform: scale(calc(9 * 20%));
+  transform: scale(calc(20% + 8 * 15%));
 }
 
 .completed {
-  background: none;
+  animation: completeFood 500ms ease-in-out forwards;
 }
 .completed::after {
-  animation: completeFood 1.5s ease-in-out;
+  animation: completeFoodAfter 500ms ease-in-out;
   animation-fill-mode: forwards;
   outline: unset;
 }
 
 @keyframes completeFood {
   0% {
-    transform: scale(1);
+    background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
   }
+  12% {
+    background: radial-gradient(transparent 65%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.0823529412) var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  25% {
+    background: radial-gradient(transparent 70%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.0823529412) var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  37% {
+    background: radial-gradient(transparent 75%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.0823529412) var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  50% {
+    background: radial-gradient(transparent 80%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.0196078431) var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  62% {
+    background: radial-gradient(transparent 85%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.0196078431) var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  75% {
+    background: radial-gradient(transparent 90%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+  87% {
+    background: radial-gradient(transparent 95%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+  100% {
+    background: radial-gradient(transparent 100%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+}
+@keyframes completeFoodAfter {
   80% {
     opacity: 1;
   }
   100% {
-    transform: scale(2.1);
+    transform: scale(1.2);
     opacity: 0;
   }
 }
@@ -421,6 +431,10 @@ body {
   align-items: stretch;
   justify-content: space-between;
   padding-top: 4px;
+}
+.counters .counter .content [data-counter] {
+  text-align: center;
+  font-size: 24px;
 }
 @media screen and (max-width: 600px) {
   .counters .counter .content {

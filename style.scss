@@ -55,11 +55,13 @@ body {
   --bg-x: 0;
   --cell-size-neg: calc(var(--cell-size) * -1);
   --border-color: transparent;
+  border: 2px solid var(--border-color);
   image-rendering: pixelated;
   height: var(--cell-size);
   width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
 }
 
 .food-empty {
@@ -75,8 +77,6 @@ $end: 8;
     --bg-y: #{$i};
     --border-color: #{list.nth($food-border-colors, $i+1)};
     --stage-percentage: 0%;
-    background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
-    border: 2px solid var(--border-color);
 
     &::after {
       content: '';
@@ -104,19 +104,19 @@ $end: 8;
 @for $i from $start through $end {
   .stage-#{$i} {
     --bg-x: #{$i};
-    --stage-percentage: calc(calc(#{$i} - 1) * 20%);
+    --stage-percentage: calc(#{$i} * 16.66%);
 
     &::after {
-      transform: scale(calc(#{$i+1} * 20%));
+      transform: scale(calc(20% + calc(#{$i} * 15%)));
     }
   }
 }
 
 .completed {
-  background: none;
+  animation: completeFood 500ms ease-in-out forwards;
 
   &::after {
-    animation: completeFood 1.5s ease-in-out;
+    animation: completeFoodAfter 500ms ease-in-out;
     animation-fill-mode: forwards;
     outline: unset;
   }
@@ -124,15 +124,41 @@ $end: 8;
 
 @keyframes completeFood {
   0% {
-    transform: scale(1);
+    background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
   }
+  12% {
+    background: radial-gradient(transparent 65%, var(--border-color) 61%), linear-gradient(0deg, #ffffff15 var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  25% {
+    background: radial-gradient(transparent 70%, var(--border-color) 61%), linear-gradient(0deg, #ffffff15 var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  37% {
+    background: radial-gradient(transparent 75%, var(--border-color) 61%), linear-gradient(0deg, #ffffff15 var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  50% {
+    background: radial-gradient(transparent 80%, var(--border-color) 61%), linear-gradient(0deg, #ffffff05 var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  62% {
+    background: radial-gradient(transparent 85%, var(--border-color) 61%), linear-gradient(0deg, #ffffff05 var(--stage-percentage), transparent var(--stage-percentage));
+  }
+  75% {
+    background: radial-gradient(transparent 90%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+  87% {
+    background: radial-gradient(transparent 95%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+  100% {
+    background: radial-gradient(transparent 100%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
+  }
+}
 
+@keyframes completeFoodAfter {
   80% {
     opacity: 1;
   }
 
   100% {
-    transform: scale(2.1);
+    transform: scale(1.2);
     opacity: 0;
   }
 }
@@ -200,6 +226,10 @@ $end: 8;
       align-items: stretch;
       justify-content: space-between;
       padding-top: 4px;
+      [data-counter] {
+        text-align: center;
+        font-size: 24px;
+      }
 
       @media screen and (max-width: 600px) {
         font-size: 14px;
