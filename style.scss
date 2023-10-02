@@ -1,0 +1,265 @@
+@use 'sass:list';
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Pixelify Sans', cursive;
+}
+
+:root {
+  --cell-size: 64px;
+}
+
+@media screen and (max-width: 600px) {
+  :root {
+    --cell-size: 64px;
+  }
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(#111, black);
+  color: white;
+}
+
+.settings {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  box-shadow: -2px 0 0 0 white,
+    2px 0 0 0 white,
+    0 -2px 0 0 white,
+    0 2px 0 0 white;
+  padding: 4px;
+}
+
+.food {
+  --bg-y: 0;
+  --bg-x: 0;
+  --cell-size-neg: calc(var(--cell-size) * -1);
+  --border-color: transparent;
+  image-rendering: pixelated;
+  height: var(--cell-size);
+  width: var(--cell-size);
+  cursor: pointer;
+  transition: all 125ms ease-in-out;
+}
+
+.food-empty {
+  background: black;
+}
+
+$food-border-colors: #f4f1de, #eab69f, #e07a5f, #8f5d5d, #3d405b, #5f797b, #81b29a, #babf95, #f2cc8f;
+$start: 0;
+$end: 8;
+
+@for $i from $start through $end {
+  .food-#{$i} {
+    --bg-y: #{$i};
+    --border-color: #{list.nth($food-border-colors, $i+1)};
+    --stage-percentage: 0%;
+    background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
+    border: 2px solid var(--border-color);
+
+    &::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+      background: url('./food.png');
+      background-size: calc(var(--cell-size) * 18);
+      background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+      transform: scale(0.7);
+      // transition: transform 125ms ease-in-out;
+      filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+    }
+
+    &:active {
+      &::after {
+        outline: 4px solid white;
+        filter: unset;
+      }
+    }
+  }
+}
+
+@for $i from $start through $end {
+  .stage-#{$i} {
+    --bg-x: #{$i};
+    --stage-percentage: calc(calc(#{$i} - 1) * 20%);
+
+    &::after {
+      transform: scale(calc(#{$i+1} * 20%));
+    }
+  }
+}
+
+.completed {
+  background: none;
+
+  &::after {
+    animation: completeFood 1.5s ease-in-out;
+    animation-fill-mode: forwards;
+    outline: unset;
+  }
+}
+
+@keyframes completeFood {
+  0% {
+    transform: scale(1);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.points {
+  position: absolute;
+  animation: animPoints 1.5s ease-in-out;
+  pointer-events: none;
+  font-size: 16px;
+  text-align: center;
+  --point-origin-x: 0px;
+  --point-origin-y: 0px;
+  top: var(--point-origin-y);
+  left: var(--point-origin-x);
+  color: white;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+@keyframes animPoints {
+  0% {
+    transform: scale(0) translateX(8px);
+    opacity: 0;
+    top: var(--point-origin-y);
+  }
+
+  10% {
+    transform: scale(2) translateX(8px);
+    opacity: 1;
+    top: calc(16px + var(--point-origin-y));
+  }
+
+  100% {
+    transform: scale(1) translateX(8px);
+    opacity: 0;
+    top: calc(-128px + var(--point-origin-y));
+  }
+}
+
+.counters {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+
+  .counter {
+    display: flex;
+    flex-direction: row;
+    box-shadow: -2px 0 0 0 white,
+      2px 0 0 0 white,
+      0 -2px 0 0 white,
+      0 2px 0 0 white;
+
+    .food {
+      --cell-size: 24px;
+      --border-color: transparent;
+    }
+
+    .content {
+      min-width: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      padding-top: 4px;
+
+      @media screen and (max-width: 600px) {
+        font-size: 14px;
+      }
+
+      p {
+        padding: 0px 8px;
+      }
+
+      a {
+        background: white;
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.settings {
+  .gold-wrapper {
+    padding-right: 16px;
+    border-right: 2px solid white;
+    margin-right: 8px;
+  }
+}
+
+.tool {
+  padding: 8px;
+
+  .food {
+    @extend .food;
+    @extend .food-1;
+
+    --cell-size: 24px;
+    --border-color: transparent;
+
+    background: black;
+
+    .active {
+      background: #333;
+    }
+
+    &.hoe {
+      --bg-x: 17;
+      --bg-y: 7;
+    }
+
+    &.hose {
+      --bg-x: 17;
+      --bg-y: 5;
+    }
+  }
+
+  input {
+    display: none;
+  }
+
+  &:has(input:checked) {
+    outline: 2px solid white;
+  }
+}

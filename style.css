@@ -1,0 +1,473 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: "Pixelify Sans", cursive;
+}
+
+:root {
+  --cell-size: 64px;
+}
+
+@media screen and (max-width: 600px) {
+  :root {
+    --cell-size: 64px;
+  }
+}
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(#111, black);
+  color: white;
+}
+
+.settings {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  box-shadow: -2px 0 0 0 white, 2px 0 0 0 white, 0 -2px 0 0 white, 0 2px 0 0 white;
+  padding: 4px;
+}
+
+.food, .tool .food {
+  --bg-y: 0;
+  --bg-x: 0;
+  --cell-size-neg: calc(var(--cell-size) * -1);
+  --border-color: transparent;
+  image-rendering: pixelated;
+  height: var(--cell-size);
+  width: var(--cell-size);
+  cursor: pointer;
+  transition: all 125ms ease-in-out;
+}
+
+.food-empty {
+  background: black;
+}
+
+.food-0 {
+  --bg-y: 0;
+  --border-color: #f4f1de;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-0::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-0:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-1, .tool .food {
+  --bg-y: 1;
+  --border-color: #eab69f;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-1::after, .tool .food::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-1:active::after, .tool .food:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-2 {
+  --bg-y: 2;
+  --border-color: #e07a5f;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-2::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-2:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-3 {
+  --bg-y: 3;
+  --border-color: #8f5d5d;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-3::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-3:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-4 {
+  --bg-y: 4;
+  --border-color: #3d405b;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-4::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-4:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-5 {
+  --bg-y: 5;
+  --border-color: #5f797b;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-5::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-5:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-6 {
+  --bg-y: 6;
+  --border-color: #81b29a;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-6::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-6:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-7 {
+  --bg-y: 7;
+  --border-color: #babf95;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-7::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-7:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.food-8 {
+  --bg-y: 8;
+  --border-color: #f2cc8f;
+  --stage-percentage: 0%;
+  background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
+  border: 2px solid var(--border-color);
+}
+.food-8::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: url("./food.png");
+  background-size: calc(var(--cell-size) * 18);
+  background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
+  transform: scale(0.7);
+  filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
+}
+.food-8:active::after {
+  outline: 4px solid white;
+  filter: unset;
+}
+
+.stage-0 {
+  --bg-x: 0;
+  --stage-percentage: calc(calc(0 - 1) * 20%);
+}
+.stage-0::after {
+  transform: scale(calc(1 * 20%));
+}
+
+.stage-1 {
+  --bg-x: 1;
+  --stage-percentage: calc(calc(1 - 1) * 20%);
+}
+.stage-1::after {
+  transform: scale(calc(2 * 20%));
+}
+
+.stage-2 {
+  --bg-x: 2;
+  --stage-percentage: calc(calc(2 - 1) * 20%);
+}
+.stage-2::after {
+  transform: scale(calc(3 * 20%));
+}
+
+.stage-3 {
+  --bg-x: 3;
+  --stage-percentage: calc(calc(3 - 1) * 20%);
+}
+.stage-3::after {
+  transform: scale(calc(4 * 20%));
+}
+
+.stage-4 {
+  --bg-x: 4;
+  --stage-percentage: calc(calc(4 - 1) * 20%);
+}
+.stage-4::after {
+  transform: scale(calc(5 * 20%));
+}
+
+.stage-5 {
+  --bg-x: 5;
+  --stage-percentage: calc(calc(5 - 1) * 20%);
+}
+.stage-5::after {
+  transform: scale(calc(6 * 20%));
+}
+
+.stage-6 {
+  --bg-x: 6;
+  --stage-percentage: calc(calc(6 - 1) * 20%);
+}
+.stage-6::after {
+  transform: scale(calc(7 * 20%));
+}
+
+.stage-7 {
+  --bg-x: 7;
+  --stage-percentage: calc(calc(7 - 1) * 20%);
+}
+.stage-7::after {
+  transform: scale(calc(8 * 20%));
+}
+
+.stage-8 {
+  --bg-x: 8;
+  --stage-percentage: calc(calc(8 - 1) * 20%);
+}
+.stage-8::after {
+  transform: scale(calc(9 * 20%));
+}
+
+.completed {
+  background: none;
+}
+.completed::after {
+  animation: completeFood 1.5s ease-in-out;
+  animation-fill-mode: forwards;
+  outline: unset;
+}
+
+@keyframes completeFood {
+  0% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+.points {
+  position: absolute;
+  animation: animPoints 1.5s ease-in-out;
+  pointer-events: none;
+  font-size: 16px;
+  text-align: center;
+  --point-origin-x: 0px;
+  --point-origin-y: 0px;
+  top: var(--point-origin-y);
+  left: var(--point-origin-x);
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+@keyframes animPoints {
+  0% {
+    transform: scale(0) translateX(8px);
+    opacity: 0;
+    top: var(--point-origin-y);
+  }
+  10% {
+    transform: scale(2) translateX(8px);
+    opacity: 1;
+    top: calc(16px + var(--point-origin-y));
+  }
+  100% {
+    transform: scale(1) translateX(8px);
+    opacity: 0;
+    top: calc(-128px + var(--point-origin-y));
+  }
+}
+.counters {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+.counters .counter {
+  display: flex;
+  flex-direction: row;
+  box-shadow: -2px 0 0 0 white, 2px 0 0 0 white, 0 -2px 0 0 white, 0 2px 0 0 white;
+}
+.counters .counter .food {
+  --cell-size: 24px;
+  --border-color: transparent;
+}
+.counters .counter .content {
+  min-width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+@media screen and (max-width: 600px) {
+  .counters .counter .content {
+    font-size: 14px;
+  }
+}
+.counters .counter .content p {
+  padding: 0px 8px;
+}
+.counters .counter .content a {
+  background: white;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.settings .gold-wrapper {
+  padding-right: 16px;
+  border-right: 2px solid white;
+  margin-right: 8px;
+}
+
+.tool {
+  padding: 8px;
+}
+.tool .food {
+  --cell-size: 24px;
+  --border-color: transparent;
+  background: black;
+}
+.tool .food .active {
+  background: #333;
+}
+.tool .food.hoe {
+  --bg-x: 17;
+  --bg-y: 7;
+}
+.tool .food.hose {
+  --bg-x: 17;
+  --bg-y: 5;
+}
+.tool input {
+  display: none;
+}
+.tool:has(input:checked) {
+  outline: 2px solid white;
+}
+
+/*# sourceMappingURL=style.css.map */
