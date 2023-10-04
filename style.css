@@ -55,6 +55,7 @@ body {
   width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
+  transition-delay: 0ms;
   background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
 }
 
@@ -66,6 +67,7 @@ body {
   --bg-y: 0;
   --border-color: #f4f1de;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-0::after {
   content: "";
@@ -88,6 +90,7 @@ body {
   --bg-y: 1;
   --border-color: #eab69f;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-1::after, .tool .food::after {
   content: "";
@@ -110,6 +113,7 @@ body {
   --bg-y: 2;
   --border-color: #e07a5f;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-2::after {
   content: "";
@@ -132,6 +136,7 @@ body {
   --bg-y: 3;
   --border-color: #8f5d5d;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-3::after {
   content: "";
@@ -154,6 +159,7 @@ body {
   --bg-y: 4;
   --border-color: #3d405b;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-4::after {
   content: "";
@@ -176,6 +182,7 @@ body {
   --bg-y: 5;
   --border-color: #5f797b;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-5::after {
   content: "";
@@ -198,6 +205,7 @@ body {
   --bg-y: 6;
   --border-color: #81b29a;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-6::after {
   content: "";
@@ -220,6 +228,7 @@ body {
   --bg-y: 7;
   --border-color: #babf95;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-7::after {
   content: "";
@@ -242,6 +251,7 @@ body {
   --bg-y: 8;
   --border-color: #f2cc8f;
   --stage-percentage: 0%;
+  transition-delay: 125ms;
 }
 .food-8::after {
   content: "";
@@ -413,7 +423,7 @@ body {
 .counters {
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 16px;
 }
 .counters .counter {
   display: flex;
@@ -460,10 +470,12 @@ body {
 
 .tool {
   padding: 8px;
+  cursor: pointer;
 }
 .tool .food {
   --cell-size: 24px;
   --border-color: transparent;
+  pointer-events: none;
   background: black;
 }
 .tool .food .active {
@@ -476,6 +488,10 @@ body {
 .tool .food.hose {
   --bg-x: 17;
   --bg-y: 5;
+}
+.tool .food.combine {
+  --bg-x: 17;
+  --bg-y: 4;
 }
 .tool input {
   display: none;

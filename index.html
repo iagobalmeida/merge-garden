@@ -13,33 +13,32 @@
 </head>
 
 <body>
+  <div id="counters-wrap" class="counters"></div>
+  <div class="grid">
+  </div>
   <div class="settings">
     <div class="gold-wrapper">
       <label data-gold="0">0</label>
       <label>⛃</label>
     </div>
+    <label class="tool" for="toggle-combine">
+      <!-- <span>Combine</span> -->
+      <div class="food combine"></div>
+      <input type="radio" name="tool" id="toggle-combine" value="combine" checked>
+    </label>
     <label class="tool" for="toggle-hoe">
-      <span>Hoe</span>
+      <!-- <span>Hoe</span> -->
       <div class="food hoe"></div>
-      <input type="checkbox" id="toggle-hoe">
+      <input type="radio" name="tool" id="toggle-hoe" value="hoe">
     </label>
     <label class="tool" for="toggle-hose">
-      <span>Hose</span>
+      <!-- <span>Hose</span> -->
       <div class="food hose"></div>
-      <input type="checkbox" id="toggle-hose">
+      <input type="radio" name="tool" id="toggle-hose" value="hose">
     </label>
-  </div>
-  <div id="counters-wrap" class="counters"></div>
-  <div class="grid">
   </div>
   <script src="script.js"></script>
 
-  <!--
-  This script places a badge on your repl's full-browser view back to your repl's cover
-  page. Try various colors for the theme: dark, light, red, orange, yellow, lime, green,
-  teal, blue, blurple, magenta, pink!
-  -->
-  <script src="https://replit.com/public/js/replit-badge-v2.js" theme="dark" position="bottom-right"></script>
 </body>
 
 </html>

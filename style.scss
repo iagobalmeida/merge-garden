@@ -61,6 +61,7 @@ body {
   width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
+  transition-delay: 0ms;
   background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
 }
 
@@ -77,6 +78,7 @@ $end: 8;
     --bg-y: #{$i};
     --border-color: #{list.nth($food-border-colors, $i+1)};
     --stage-percentage: 0%;
+    transition-delay: 125ms;
 
     &::after {
       content: '';
@@ -204,7 +206,7 @@ $end: 8;
 .counters {
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 16px;
 
   .counter {
     display: flex;
@@ -260,6 +262,7 @@ $end: 8;
 
 .tool {
   padding: 8px;
+  cursor: pointer;
 
   .food {
     @extend .food;
@@ -267,6 +270,7 @@ $end: 8;
 
     --cell-size: 24px;
     --border-color: transparent;
+    pointer-events: none;
 
     background: black;
 
@@ -282,6 +286,11 @@ $end: 8;
     &.hose {
       --bg-x: 17;
       --bg-y: 5;
+    }
+
+    &.combine {
+      --bg-x: 17;
+      --bg-y: 4;
     }
   }
 

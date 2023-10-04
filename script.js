@@ -1,346 +1,358 @@
-const newElem = (tagName, properties) => (Object.assign(document.createElement(tagName), properties));
-
-const domQuery = (query) => (document.querySelector(query));
-
-const domQueryAll = (query) => (document.querySelectorAll(query));
-
-// 1,2,3,5,6
-const foodNames = [
-  'corn',
-  'wheat',
-  'tomatoe',
-  'pepper',
-  'carrot',
-  'potatoe',
-  'beet',
-  'pumpkim',
-  'bean',
-  'sunflower'
-]
-const possibilities = [2, 6, 8];
-const rand = (max, min = 0) => (possibilities[Math.floor(Math.random() * possibilities.length)]);
-
+const domQuery = (q) => (document.querySelector(q));
+const domQueryAll = (q) => (document.querySelectorAll(q));
+const domCreateElem = (t, a) => (Object.assign(document.createElement(t), a));
 const sleep = async (duration) => (await new Promise(r => setTimeout(r, duration)))
 
-const onlyUnique = (value, index, array) => (array.indexOf(value) === index);
+SLOT_BASE_CLASS = 'food';
 
-let usingHoe = false;
-let usingHose = false;
-let animating = false;
-let animSpeeds = {
-  'slowest': 500,
-  'slow': 375,
-  'default': 250,
-  'fast': 125
-};
+class SlotType {
+    constructor(typeId, name) {
+        this.typeId = typeId;
+        this.name = name;
+    }
+    getClassList(stage=0) {
+        const { typeId } = this;
+        const completed = stage >= 5 ? 'completed' : '';
+        if(typeId == 0) return [`${SLOT_BASE_CLASS} ${SLOT_BASE_CLASS}-empty`];
+        return [`${SLOT_BASE_CLASS} ${SLOT_BASE_CLASS}-${typeId} stage-${stage} ${completed}`];
+    }
+}
 
-class Food {
-  constructor(stage = 1) {
-    this.food = rand(3, 7);
-    this.stage = stage;
-  }
-  set(food, stage = 1) {
-    this.food = food;
-    this.stage = stage;
-  }
+const SLOT_TYPES = [
+    new SlotType(0, 'empty'),
+    new SlotType(1, 'corn'),
+    new SlotType(2, 'wheat'),
+    new SlotType(3, 'tomatoe'),
+    new SlotType(4, 'pepper'),
+    new SlotType(5, 'carrot'),
+    new SlotType(6, 'potatoe'),
+    new SlotType(7, 'beet'),
+    new SlotType(8, 'pumpkin'),
+    new SlotType(9, 'bean'),
+    new SlotType(10, 'sunflower')
+];
+
+class Slot {
+    constructor(domParent, type=null, stage=1, domInit=true) {
+        this.type = type;
+        this.stage = stage;
+        this.domParent = domParent;
+        if(domInit) return this.domInit();
+    }
+    domInit() {
+        const { type, stage, domParent } = this;
+        const classList = type.getClassList(stage);
+        const domElem = domCreateElem('div', { classList });
+        domParent.appendChild(domElem);
+        this.domElem = domElem;
+    }
+    addEventListener(event, callback) {
+        this.domElem.addEventListener(event, (ev) => {
+            callback(ev, this);
+        });
+    }
+    update() {
+        const { type, stage } = this;
+        this.domElem.classList = type.getClassList(stage);
+    }
+    setStage(newValue, update=false) {
+        this.stage = Math.min(5, newValue);
+        if(update) this.update();
+    }
+    set(type, stage=1, update=false) {
+        this.type = type;
+        this.stage = stage;
+        if(update) this.update();
+    }
+    copy(slot) {
+        this.type = slot.type;
+        this.stage = slot.stage;
+    }
 }
 
 class Grid {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-    this.domElem = domQuery('.grid');
-    this.gold = 0;
-    this.points = possibilities.map(p => (0));
-    this.foods = [];
-    while (this.foods.length < width * height) {
-      const food = new Food();
-      this.foods.push(food);
+    constructor(width, height, types, domInit=true) {
+        this.width = width;
+        this.height = height;
+        this.domElem = domQuery('.grid');
+        this.slotTypes = types;
+        this.slots = [];
+        this.tool = 'default';
+        this.combineCallback = (slot) => {console.log(slot)}
+        if(domInit) this.domInit();
     }
-    this.domInit();
-    this.domInitCounters();
-    this.domUpdateAll();
-  }
-  validIndex(index) {
-    return (index < 0 || index >= this.foods.length) ? false : true;
-  }
-  validRowCol(row, col) {
-    return (row < 0 || row >= this.height || col < 0 || col >= this.width) ? false : [row, col];
-  }
-  rowColIndex(row, col) {
-    if (!this.validRowCol(row, col)) return -1;
-    return (col) + (row * this.width);
-  }
-  indexRowCol(index) {
-    const { width } = this;
-    const row = Math.floor(index / width);
-    const col = index - (row * width);
-    return [row, col]
-  }
-  getStage(index) {
-    return this.validIndex(index) ? this.foods[index].stage : 0;
-  }
-  getFood(index) {
-    return this.validIndex(index) ? this.foods[index].food : null;
-  }
-  setFood(index, value, stage = 1) {
-    return this.validIndex(index) ? this.foods[index].set(value, stage) : false;
-  };
-  domUpdateGold() {
-    const domElem = domQuery('[data-gold]');
-    domElem.innerHTML = this.gold;
-  }
-  domUpdateFood(index) {
-    const food = this.getFood(index);
-    const stage = (food == 0 ? 0 : this.getStage(index));
-    const elem = domQueryAll('.grid .food')[index];
-    elem.classList = `food ${!food ? 'food-empty' : ''} food-${food} stage-${stage}`;
-  }
-  domUpdateCounter(food) {
-    const foodIndex = possibilities.indexOf(food);
-    if (food == 0) return;
-    const domCounter = domQuery(`[data-counter="${food}"]`);
-    if (domCounter) {
-      domCounter.innerHTML = this.points[foodIndex]
+    __validSlot(index) {
+        return (index < 0 || index >= this.slots.length) ? false : true;
     }
-  }
-  async domUpdateAll() {
-    this.foods.forEach((_, fi) => {
-      this.domUpdateFood(fi)
-    });
-    possibilities.forEach((p) => {
-      this.domUpdateCounter(p)
-    });
-    this.domUpdateGold();
-  }
-  domInitCounters() {
-    const wrapper = domQuery('#counters-wrap');
-    possibilities.forEach(p => {
-      if (p == 0) return;
-      const domElem = newElem('div', {
-        classList: ['counter']
-      });
-      const domIcon = newElem('div', {
-        classList: [`food food-${p} stage-4`]
-      });
-      const domContent = newElem('div', {
-        classList: ['content']
-      });
-      const name = foodNames[p-1];
-      domContent.innerHTML = `<p>${name}</p><p data-counter="${p}"></p><a>Sell +2 ⛃</a>`;
-      domContent.querySelector('a').addEventListener('click', (ev) => {
-        this.sellPoints(p);
-      })
-      domElem.appendChild(domIcon);
-      domElem.appendChild(domContent);
-      wrapper.appendChild(domElem);
-    });
-  }
-  domInit() {
-    const { width, height, domElem } = this;
-    domElem.innerHTML = "";
-    this.foods.forEach((food, foodIndex) => {
-      const foodId = food.food;
-      const domFood = newElem('div', {
-        classList: foodId ? [`food food-${foodId}`] : [`food food-empty`]
-      });
-      domFood.addEventListener('click', () => {
-        if (animating) return;
-        if (usingHose) this.useHose(foodIndex);
-        else if (usingHoe) this.useHoe(foodIndex);
-        else this.verifyFood(foodIndex);
-      });
-      domElem.appendChild(domFood);
-    });
-    domElem.style.gridTemplateColumns = 'auto '.repeat(width);
-    domElem.style.gridTemplateRows = 'auto '.repeat(height);
-  }
-  firstNonEmpty(row, col) {
-    for (let _row = row; _row >= 0; _row--) {
-      const food = this.getFood(this.rowColIndex(_row, col));
-      if (food) return this.rowColIndex(_row, col);
+    __randomType() {
+        return this.slotTypes[1 + Math.floor(Math.random()*(this.slotTypes.length-1))]
     }
-    return false;
-  }
-  async fallFood() {
-    let foodsReverse = this.foods.slice().reverse();
-    let animLastRow = null;
-    for (let fi = 0; fi < foodsReverse.length; fi++) {
-      const i = this.foods.length - fi - 1;
-      const f = this.getFood(i);
-      if (f == null) {
-        const [row, col] = this.indexRowCol(i);
-        const upperIndex = this.firstNonEmpty(row, col);
+    domInit() {
+        const { domElem,  width, height } = this;
+        while(this.slots.length < width * height) {
+            const type = this.__randomType();
+            const slot = new Slot(domElem, type);
+            const slotIndex = this.slots.length;
+            slot.addEventListener('click', () => {
+                this.handleSlotClick(slotIndex);
+            });
+            this.slots.push(slot);
+        }
+        domElem.style.gridTemplateColumns = 'auto '.repeat(width);
+        domElem.style.gridTemplateRows = 'auto '.repeat(height);
+    }
+    async domUpdateSlot(slotIndex) {
+        this.slots[slotIndex].update();
+    }
+    async domUpdateAll() {
+        for(let slotIndex = 0; slotIndex < this.slots.length; slotIndex++) {
+            this.domUpdateSlot(slotIndex)
+        }
+    }
+    slotsGetCombinations(slotIndex, slotType=null, combinations=[]) {
+        const { width, height } = this;
+        slotType = (slotType == null) ? this.slots[slotIndex].type : slotType;
+        const row = Math.floor(slotIndex / width);
+        const col = slotIndex - (row * width);
 
-        if (row == 0 || row != 0 && upperIndex == false) {
-          this.setFood(i, rand(3, 7));
-        } else {
-          this.setFood(i, this.getFood(upperIndex), this.getStage(upperIndex));
-          this.setFood(upperIndex, null)
+        const nexts = [];
+
+        if(row > 0){
+            const up = (slotIndex - (row * width)) + ((row - 1) * width);
+            if(this.slots[up] !== undefined && this.slots[up].type.name == slotType.name && !combinations.includes(up)) {
+                combinations.push(up);
+                nexts.push(up);
+            }
         }
 
-        if (row != animLastRow) {
-          animLastRow = row;
-          await sleep(animSpeeds.fast);
+        if(row < height - 1) {
+            const down = (slotIndex - (row * width)) + ((row + 1) * width);
+            if(this.slots[down] !== undefined && this.slots[down].type.name == slotType.name && !combinations.includes(down)) {
+                combinations.push(down);
+                nexts.push(down);
+            }
         }
-      }
-      this.domUpdateAll();
-    }
-  }
-  getCombinations(index, value = null, combinations = []) {
-    value = (value == null) ? this.getFood(index) : value;
-    const [row, col] = this.indexRowCol(index);
-    const nexts = [];
 
-    const up = this.rowColIndex(row - 1, col);
-    if (up >= 0 && this.getFood(up) == value && !combinations.includes(up)) {
-      combinations.push(up);
-      nexts.push(up);
-    }
-
-    const down = this.rowColIndex(row + 1, col);
-    if (down >= 0 && this.getFood(down) == value && !combinations.includes(down)) {
-      combinations.push(down);
-      nexts.push(down);
-    }
-
-    const left = this.rowColIndex(row, col - 1);
-    if (left >= 0 && this.getFood(left) == value && !combinations.includes(left)) {
-      combinations.push(left);
-      nexts.push(left);
-    }
-
-    const right = this.rowColIndex(row, col + 1);
-    if (right >= 0 && this.getFood(right) == value && !combinations.includes(right)) {
-      combinations.push(right);
-      nexts.push(right);
-    }
-
-    for (const next of nexts) {
-      const _combinations = this.getCombinations(next, value, combinations);
-      combinations.concat(_combinations);
-    }
-
-    return combinations;
-  }
-  async animatePoints(index, points) {
-    const originRect = domQueryAll('.grid .food')[index].getBoundingClientRect();
-    const domPoint = newElem('p', {
-      innerHTML: points
-    });
-    domPoint.classList = ['points'];
-    domPoint.style.setProperty('--point-origin-x', `${originRect.left + 8}px`);
-    domPoint.style.setProperty('--point-origin-y', `${originRect.top + 8}px`);
-    domQuery('body').appendChild(domPoint);
-    await sleep(animSpeeds.slowest);
-    domPoint.remove();
-  }
-  async sellPoints(food) {
-    const pointIndex = possibilities.indexOf(food);
-    const points = this.points[pointIndex];
-    if(points >= 1) {
-      this.points[pointIndex] -= 1;
-      this.gold += 2;
-    }
-    this.domUpdateAll();
-  }
-  async addPoints(index, points) {
-    const food = this.getFood(index);
-    const pointIndex = possibilities.indexOf(food);
-    this.points[pointIndex] += points;
-    await this.animatePoints(index, `${points * 100}%`);
-  }
-  async verifyFood(index) {
-    animating = true;
-    const food = this.getFood(index);
-    
-    if (food == null) return;
-    const combinations = this.getCombinations(index).filter(onlyUnique);
-    let stageMax = -1;
-    const stageSum = combinations.reduce((acc, i) => {
-      const _stage = this.getStage(i);
-      acc += _stage;
-      stageMax = _stage > stageMax ? _stage : stageMax;
-      return acc;
-    }, 0);
-
-    const nextStage = Math.min(5, stageMax + Math.floor(stageSum / 3));
-
-    if (combinations.length >= 3) {
-      combinations.forEach(i => {
-        if (i == index && food != 0) {
-          if(nextStage != 5) this.animatePoints(index, `${(nextStage - 1) * 20}%`);
-          this.foods[i].set(food, nextStage);
-        } else {
-          this.foods[i].set(null);
+        if(col > 0){
+            const left = (slotIndex - (row * width) - 1) + ((row) * width);
+            if(this.slots[left] !== undefined && this.slots[left].type.name == slotType.name && !combinations.includes(left)) {
+                combinations.push(left);
+                nexts.push(left);
+            }
         }
-      });
+
+        if(col < width - 1) {
+            const right = (slotIndex - (row * width) + 1) + ((row) * width);
+            if(this.slots[right] !== undefined && this.slots[right].type.name == slotType.name && !combinations.includes(right)) {
+                combinations.push(right);
+                nexts.push(right);
+            }
+        }
+
+        for(const next of nexts){
+            const _combinations = this.slotsGetCombinations(next, slotType, combinations);
+            combinations.concat(_combinations);
+        }
+
+        return combinations;        
     }
-    this.domUpdateAll();
-    await sleep(animSpeeds.fast);
+    slotsGetFirstAbove(slotIndex) {
+        const { width } = this;
+        let ret = false;
+        let row = Math.floor(slotIndex / width);
+        const col = slotIndex - (row * width);
 
-    if (this.getStage(index) >= 5) {
-      this.addPoints(index, 1);
-      domQueryAll('.grid .food')[index].classList.add('completed');
-      await sleep(animSpeeds.slowest);
-      domQueryAll('.grid .food')[index].classList.remove('completed');
-      await this.useHoe(index);
+        while(row > 0) {
+            const _row = row - 1;
+            const aboveIndex = col + ((_row) * width);
+            const slot = this.slots[aboveIndex]
+            if(slot && slot.type.name != 'empty') return aboveIndex;
+            row -= 1;
+        }
+
+        return ret;
     }
+    async slotsFall() {
+        const { width, slotTypes } = this;
+        const reversed = this.slots.slice().reverse();
+        let sleepDuration = 250;
 
-    this.domUpdateAll();
-    await sleep(animSpeeds.fast);
-    await this.fallFood();
-    this.domUpdateAll();
-    animating = false;
-  }
-  async useHoe(index) {
-    animating = true;
-    this.setFood(index, null);
-    this.domUpdateAll();
+        for(let revIndex = 0; revIndex < reversed.length; revIndex++) {
+            const slotIndex = reversed.length - revIndex - 1;
+            const row = Math.floor(slotIndex / width);
+            const slot = this.slots[slotIndex];
+            if(slot.type.name == 'empty') {
+                const slotAboveIndex = this.slotsGetFirstAbove(slotIndex);
 
-    await sleep(animSpeeds.fast);
-
-    await this.fallFood();
-    animating = false;
-  }
-  async useHose(index) {
-    animating = true;
-    this.setFood(index, this.getFood(index), Math.min(4, this.getStage(index) + 1));
-
-    await sleep(animSpeeds.fast);
-    this.domUpdateAll();
-
-    if (this.getStage(index) >= 5) {
-      this.addPoints(index, 1);
-      domQueryAll('.grid .food')[index].classList.add('completed');
-      await sleep(animSpeeds.slowest);
-      domQueryAll('.grid .food')[index].classList.remove('completed');
-      await this.useHoe(index);
+                if(row == 0 || row != 0 && slotAboveIndex == false) {
+                    this.slots[slotIndex].set(this.__randomType(), 1, true);
+                    await sleep(25);
+                    sleepDuration -= 25;
+                } else {
+                    this.slots[slotIndex].copy(this.slots[slotAboveIndex]);
+                    this.slots[slotAboveIndex].set(slotTypes[0], 1, true);
+                    await sleep(25);
+                    sleepDuration -= 25;
+                    this.slots[slotIndex].update()
+                }
+                await sleep(25);
+                sleepDuration -= 25;
+            }
+        }
+        await sleep(sleepDuration);
+        this.domUpdateAll();
     }
+    async handleCombineSlot(slotIndex) {
+        const { slotTypes } = this;
+        const slotType = this.slots[slotIndex].type;
 
-    this.domUpdateAll();
-    await sleep(animSpeeds.default);
-    await this.fallFood();
-    this.domUpdateAll();
-    animating = false;
-  }
+        if(slotType.name == 'empty') return;
+
+        const combinations = this.slotsGetCombinations(slotIndex, slotType, []);
+
+        let sleepDuration = 125;
+
+        if(combinations.length >= 3) {
+            const nextStage = combinations.reduce((sum, slotIndex) => {
+                sum += this.slots[slotIndex].stage;
+                return sum;
+            }, - 1);
+            
+            for(const _slotIndex of combinations) {
+                if(_slotIndex == slotIndex) {
+                    this.slots[_slotIndex].setStage(nextStage, true);
+                    if(this.slots[slotIndex].stage >= 5) sleepDuration = 500;
+                } else {
+                    this.slots[_slotIndex].set(slotTypes[0], 1, true);
+                }
+                await sleep(25);
+                sleepDuration -= 25;
+            }
+        }
+
+        await sleep(sleepDuration);
+
+        if(this.slots[slotIndex].stage >= 5) {
+            this.combineCallback(this.slots[slotIndex]);
+            this.slots[slotIndex].set(slotTypes[0], 1);
+        }
+
+        await this.slotsFall();
+    }
+    async handleHoeSlot(slotIndex) {
+        const { slotTypes } = this;
+        this.slots[slotIndex].set(slotTypes[0], 1);
+        await this.slotsFall();
+    }
+    async handleHoseSlot(slotIndex) {
+        const { slotTypes } = this;
+        const nextStage = Math.min(5, this.slots[slotIndex].stage + 1);
+        this.slots[slotIndex].setStage(nextStage, true);
+
+        if(this.slots[slotIndex].stage >= 5) {
+            await sleep(250);
+            this.combineCallback(this.slots[slotIndex]);
+            this.slots[slotIndex].set(slotTypes[0], 1);
+        }
+        await this.slotsFall();
+
+    }
+    async handleSlotClick(slotIndex) {
+        switch(this.tool) {
+            case 'hoe':
+                await this.handleHoeSlot(slotIndex);
+            break;
+            case 'hose':
+                await this.handleHoseSlot(slotIndex);
+            break;
+            default:
+                await this.handleCombineSlot(slotIndex);
+            break;
+        }
+    }
+}
+
+class InventoryItem {
+    constructor(domParent, type, ammount, value, domInit=true) {
+        this.type = type;
+        this.ammount = ammount;
+        this.value = value;
+        this.domParent = domParent;
+        this.domWrapper = null;
+        this.domContent = null;
+        if(domInit) return this.domInit();
+    }
+    domInit() {
+        const { type, ammount, value, domParent } = this;
+        const { name } = type;
+        const iconClassList = type.getClassList(4);
+
+        const domWrapper = domCreateElem('div', { classList: ['counter'] });
+        const domIcon = domCreateElem('div', { classList: iconClassList });
+        const domContent = domCreateElem('div', { classList: ['content'] });
+
+        domContent.innerHTML = `<p>${name}</p><p data-inventory-type="${name}">${ammount}</p><a>Sell +${value} ⛃</a>`;
+
+        domWrapper.appendChild(domIcon)
+        domWrapper.appendChild(domContent)
+
+        domParent.appendChild(domWrapper);
+        this.domWrapper = domWrapper;
+        this.domContent = domContent;
+    }
+    update() {
+        const { type, ammount, value } = this;
+        const { name } = type;
+        this.domContent.innerHTML = `<p>${name}</p><p data-inventory-type="${name}">${ammount}</p><a>Sell +${value} ⛃</a>`
+    }
+    incrementAmmount(ammount, domUpdate=true) {
+        this.ammount += ammount;
+        if(domUpdate) this.update();
+    }
+}
+
+class Game {
+    constructor(gold, inventory, gridWidth=5, gridHeight=5, slotTypes=SLOT_TYPES) {
+        this.gold = gold;
+        this.inventory = inventory;
+        this.slotTypes = slotTypes;
+        this.grid = new Grid(gridWidth, gridHeight, slotTypes);
+        this.grid.combineCallback = (slot) => {
+            this.combineCallback(slot);
+        }
+        this.domInventoryParent = domQuery('#counters-wrap');
+        this.inventoryInit();
+    }
+    inventoryInit() {
+        const { domInventoryParent } = this;
+        this.slotTypes.forEach(slotType => {
+            if(slotType.name == 'empty') return;
+            this.inventory[slotType.name] = new InventoryItem(domInventoryParent, slotType, 0, 2);
+        });
+    }
+    inventoryAdd(slotType) {
+        const { domInventoryParent } = this;
+        if(!(slotType.name in this.inventory)) this.inventory[slotType.name] = new InventoryItem(domInventoryParent, slotType, 0, 2);
+        this.inventory[slotType.name].incrementAmmount(1);
+    }
+    combineCallback(slot){
+        this.inventoryAdd(slot.type);
+        console.log(this.inventory);
+    }
 }
 
 window.addEventListener('load', () => {
-  window.grid = new Grid(5, 5);
+    const types = [
+        SLOT_TYPES[0],
+        SLOT_TYPES[4],
+        SLOT_TYPES[7],
+        SLOT_TYPES[2]
+    ]
+    const game = new Game(0, {}, 4, 4, types);
+    window.game = game;
 
-  const domToggleHoe = domQuery('#toggle-hoe');
-  const domToggleHose = domQuery('#toggle-hose');
-  
-  domToggleHoe.addEventListener('change', (ev) => {
-    usingHose = false;
-    domToggleHose.checked = false;
-    usingHoe = domToggleHoe.checked;
-  });
-
-  domToggleHose.addEventListener('change', (ev) => {
-    usingHoe = false;
-    domToggleHoe.checked = false;
-    usingHose = domToggleHose.checked;
-  });
+    domQueryAll('input[name="tool"]').forEach(el => el.addEventListener('change', () => {
+        const currentTool = domQuery('input[name="tool"]:checked').value;
+        window.game.grid.tool = currentTool;
+    }))
 });
