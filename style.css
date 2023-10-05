@@ -5,12 +5,12 @@
 }
 
 :root {
-  --cell-size: 64px;
+  --cell-size: 5rem;
 }
 
 @media screen and (max-width: 600px) {
   :root {
-    --cell-size: 64px;
+    --cell-size: 5rem;
   }
 }
 html {
@@ -44,230 +44,231 @@ body {
   padding: 4px;
 }
 
-.food, .tool .food {
+.slot, .tool .slot {
   --bg-y: 0;
   --bg-x: 0;
   --cell-size-neg: calc(var(--cell-size) * -1);
   --border-color: transparent;
   border: 2px solid var(--border-color);
   image-rendering: pixelated;
-  height: var(--cell-size);
-  width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
   transition-delay: 0ms;
   background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
 }
 
-.food-empty {
+.slot-empty {
   background: black;
 }
 
-.food-0 {
+.slot-0 {
   --bg-y: 0;
-  --border-color: #f4f1de;
+  --border-color: #473335;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-0::after {
+.slot-0::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-0:active::after {
-  outline: 4px solid white;
+.slot-0:active::after {
   filter: unset;
 }
 
-.food-1, .tool .food {
+.slot-1, .tool .slot {
   --bg-y: 1;
-  --border-color: #eab69f;
+  --border-color: #b0413e;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-1::after, .tool .food::after {
+.slot-1::after, .tool .slot::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-1:active::after, .tool .food:active::after {
-  outline: 4px solid white;
+.slot-1:active::after, .tool .slot:active::after {
   filter: unset;
 }
 
-.food-2 {
+.slot-2 {
   --bg-y: 2;
-  --border-color: #e07a5f;
+  --border-color: #c84639;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-2::after {
+.slot-2::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-2:active::after {
-  outline: 4px solid white;
+.slot-2:active::after {
   filter: unset;
 }
 
-.food-3 {
+.slot-3 {
   --bg-y: 3;
-  --border-color: #8f5d5d;
+  --border-color: #ce763b;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-3::after {
+.slot-3::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-3:active::after {
-  outline: 4px solid white;
+.slot-3:active::after {
   filter: unset;
 }
 
-.food-4 {
+.slot-4 {
   --bg-y: 4;
-  --border-color: #3d405b;
+  --border-color: #e2af47;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-4::after {
+.slot-4::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-4:active::after {
-  outline: 4px solid white;
+.slot-4:active::after {
   filter: unset;
 }
 
-.food-5 {
+.slot-5 {
   --bg-y: 5;
-  --border-color: #5f797b;
+  --border-color: #e9d6af;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-5::after {
+.slot-5::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-5:active::after {
-  outline: 4px solid white;
+.slot-5:active::after {
   filter: unset;
 }
 
-.food-6 {
+.slot-6 {
   --bg-y: 6;
-  --border-color: #81b29a;
+  --border-color: #6bb4b1;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-6::after {
+.slot-6::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-6:active::after {
-  outline: 4px solid white;
+.slot-6:active::after {
   filter: unset;
 }
 
-.food-7 {
+.slot-7 {
   --bg-y: 7;
-  --border-color: #babf95;
+  --border-color: #32687a;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-7::after {
+.slot-7::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-7:active::after {
-  outline: 4px solid white;
+.slot-7:active::after {
   filter: unset;
 }
 
-.food-8 {
+.slot-8 {
   --bg-y: 8;
-  --border-color: #f2cc8f;
+  --border-color: #32687a;
   --stage-percentage: 0%;
   transition-delay: 125ms;
 }
-.food-8::after {
+.slot-8::after {
   content: "";
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  background: url("./food.png");
+  background: url("./slot.png");
   background-size: calc(var(--cell-size) * 18);
   background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
   transform: scale(0.7);
   filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black);
 }
-.food-8:active::after {
-  outline: 4px solid white;
+.slot-8:active::after {
   filter: unset;
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (0 - 1) * 0.05));
+  }
+}
+.grid .stage-0::after {
+  animation: stageAnim calc(2000ms / 0) alternate-reverse infinite;
 }
 
 .stage-0 {
@@ -276,6 +277,22 @@ body {
 }
 .stage-0::after {
   transform: scale(calc(20% + 0 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-0:active:not(.completed)::after {
+  transform: scale(calc(20% + 0 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (1 - 1) * 0.05));
+  }
+}
+.grid .stage-1::after {
+  animation: stageAnim calc(2000ms / 1) alternate-reverse infinite;
 }
 
 .stage-1 {
@@ -284,6 +301,22 @@ body {
 }
 .stage-1::after {
   transform: scale(calc(20% + 1 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-1:active:not(.completed)::after {
+  transform: scale(calc(20% + 1 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (2 - 1) * 0.05));
+  }
+}
+.grid .stage-2::after {
+  animation: stageAnim calc(2000ms / 2) alternate-reverse infinite;
 }
 
 .stage-2 {
@@ -292,6 +325,22 @@ body {
 }
 .stage-2::after {
   transform: scale(calc(20% + 2 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-2:active:not(.completed)::after {
+  transform: scale(calc(20% + 2 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (3 - 1) * 0.05));
+  }
+}
+.grid .stage-3::after {
+  animation: stageAnim calc(2000ms / 3) alternate-reverse infinite;
 }
 
 .stage-3 {
@@ -300,6 +349,22 @@ body {
 }
 .stage-3::after {
   transform: scale(calc(20% + 3 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-3:active:not(.completed)::after {
+  transform: scale(calc(20% + 3 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (4 - 1) * 0.05));
+  }
+}
+.grid .stage-4::after {
+  animation: stageAnim calc(2000ms / 4) alternate-reverse infinite;
 }
 
 .stage-4 {
@@ -308,6 +373,22 @@ body {
 }
 .stage-4::after {
   transform: scale(calc(20% + 4 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-4:active:not(.completed)::after {
+  transform: scale(calc(20% + 4 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (5 - 1) * 0.05));
+  }
+}
+.grid .stage-5::after {
+  animation: stageAnim calc(2000ms / 5) alternate-reverse infinite;
 }
 
 .stage-5 {
@@ -316,6 +397,22 @@ body {
 }
 .stage-5::after {
   transform: scale(calc(20% + 5 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-5:active:not(.completed)::after {
+  transform: scale(calc(20% + 5 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (6 - 1) * 0.05));
+  }
+}
+.grid .stage-6::after {
+  animation: stageAnim calc(2000ms / 6) alternate-reverse infinite;
 }
 
 .stage-6 {
@@ -324,6 +421,22 @@ body {
 }
 .stage-6::after {
   transform: scale(calc(20% + 6 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-6:active:not(.completed)::after {
+  transform: scale(calc(20% + 6 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (7 - 1) * 0.05));
+  }
+}
+.grid .stage-7::after {
+  animation: stageAnim calc(2000ms / 7) alternate-reverse infinite;
 }
 
 .stage-7 {
@@ -332,6 +445,22 @@ body {
 }
 .stage-7::after {
   transform: scale(calc(20% + 7 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-7:active:not(.completed)::after {
+  transform: scale(calc(20% + 7 * 10%));
+}
+
+@keyframes stageAnim {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(calc(1 + (8 - 1) * 0.05));
+  }
+}
+.grid .stage-8::after {
+  animation: stageAnim calc(2000ms / 8) alternate-reverse infinite;
 }
 
 .stage-8 {
@@ -340,18 +469,36 @@ body {
 }
 .stage-8::after {
   transform: scale(calc(20% + 8 * 15%));
+  transition: transform 125ms ease-in-out;
+}
+.stage-8:active:not(.completed)::after {
+  transform: scale(calc(20% + 8 * 10%));
 }
 
+.removed {
+  animation: removeSlot 250ms ease-in-out forwards;
+}
+
+@keyframes removeSlot {
+  0% {
+    filter: blur(0px) contrast(1);
+    opacity: 1;
+  }
+  100% {
+    filter: blur(10px) contrast(2);
+    opacity: 0;
+  }
+}
 .completed {
-  animation: completeFood 500ms ease-in-out forwards;
+  animation: completeslot 500ms ease-in-out forwards;
 }
 .completed::after {
-  animation: completeFoodAfter 500ms ease-in-out;
+  animation: completeslotAfter 500ms ease-in-out;
   animation-fill-mode: forwards;
   outline: unset;
 }
 
-@keyframes completeFood {
+@keyframes completeslot {
   0% {
     background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, rgba(255, 255, 255, 0.1450980392) var(--stage-percentage), transparent var(--stage-percentage));
   }
@@ -380,7 +527,7 @@ body {
     background: radial-gradient(transparent 100%, var(--border-color) 61%), linear-gradient(0deg, transparent, transparent);
   }
 }
-@keyframes completeFoodAfter {
+@keyframes completeslotAfter {
   80% {
     opacity: 1;
   }
@@ -430,8 +577,10 @@ body {
   flex-direction: row;
   box-shadow: -2px 0 0 0 white, 2px 0 0 0 white, 0 -2px 0 0 white, 0 2px 0 0 white;
 }
-.counters .counter .food {
-  --cell-size: 24px;
+.counters .counter .slot {
+  --cell-size: 2rem;
+  width: 2rem;
+  height: 2rem;
   --border-color: transparent;
 }
 .counters .counter .content {
@@ -472,24 +621,25 @@ body {
   padding: 8px;
   cursor: pointer;
 }
-.tool .food {
-  --cell-size: 24px;
+.tool .slot {
+  --cell-size: 3rem;
   --border-color: transparent;
   pointer-events: none;
-  background: black;
+  width: 3rem;
+  height: 3rem;
 }
-.tool .food .active {
+.tool .slot .active {
   background: #333;
 }
-.tool .food.hoe {
+.tool .slot.hoe {
   --bg-x: 17;
   --bg-y: 7;
 }
-.tool .food.hose {
+.tool .slot.hose {
   --bg-x: 17;
   --bg-y: 5;
 }
-.tool .food.combine {
+.tool .slot.combine {
   --bg-x: 17;
   --bg-y: 4;
 }

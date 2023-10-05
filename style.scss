@@ -7,12 +7,12 @@
 }
 
 :root {
-  --cell-size: 64px;
+  --cell-size: 5rem;
 }
 
 @media screen and (max-width: 600px) {
   :root {
-    --cell-size: 64px;
+    --cell-size: 5rem;
   }
 }
 
@@ -50,33 +50,31 @@ body {
   padding: 4px;
 }
 
-.food {
+.slot {
   --bg-y: 0;
   --bg-x: 0;
   --cell-size-neg: calc(var(--cell-size) * -1);
   --border-color: transparent;
   border: 2px solid var(--border-color);
   image-rendering: pixelated;
-  height: var(--cell-size);
-  width: var(--cell-size);
   cursor: pointer;
   transition: all 125ms ease-in-out;
   transition-delay: 0ms;
   background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
 }
 
-.food-empty {
+.slot-empty {
   background: black;
 }
 
-$food-border-colors: #f4f1de, #eab69f, #e07a5f, #8f5d5d, #3d405b, #5f797b, #81b29a, #babf95, #f2cc8f;
+$slot-border-colors: #473335, #b0413e, #c84639, #ce763b, #e2af47, #e9d6af, #6bb4b1, #32687a, #32687a;
 $start: 0;
 $end: 8;
 
 @for $i from $start through $end {
-  .food-#{$i} {
+  .slot-#{$i} {
     --bg-y: #{$i};
-    --border-color: #{list.nth($food-border-colors, $i+1)};
+    --border-color: #{list.nth($slot-border-colors, $i+1)};
     --stage-percentage: 0%;
     transition-delay: 125ms;
 
@@ -86,7 +84,7 @@ $end: 8;
       width: 100%;
       height: 100%;
       border-radius: 100%;
-      background: url('./food.png');
+      background: url('./slot.png');
       background-size: calc(var(--cell-size) * 18);
       background-position: calc(var(--bg-x) * var(--cell-size-neg)) calc(var(--bg-y) * var(--cell-size-neg));
       transform: scale(0.7);
@@ -96,7 +94,6 @@ $end: 8;
 
     &:active {
       &::after {
-        outline: 4px solid white;
         filter: unset;
       }
     }
@@ -104,27 +101,62 @@ $end: 8;
 }
 
 @for $i from $start through $end {
+  .grid .stage-#{$i} {
+    @keyframes stageAnim {
+      0% {
+        filter: brightness(1);
+      }
+      100% {
+        filter: brightness(calc(1 + calc(calc(#{$i} - 1) * 0.05)));
+      }
+    }
+    &::after {
+      animation: stageAnim calc(2000ms / #{$i}) alternate-reverse infinite;
+    }
+  }
   .stage-#{$i} {
     --bg-x: #{$i};
     --stage-percentage: calc(#{$i} * 16.66%);
 
     &::after {
       transform: scale(calc(20% + calc(#{$i} * 15%)));
+      transition: transform 125ms ease-in-out;
+    }
+    &:active:not(.completed) {
+      &::after {
+        transform: scale(calc(20% + calc(#{$i} * 10%)));
+      }
     }
   }
 }
 
+
+.removed {
+  animation: removeSlot 250ms ease-in-out forwards;
+}
+
+@keyframes removeSlot {
+  0% {
+    filter: blur(0px) contrast(1);
+    opacity: 1;
+  }
+  100% {
+    filter: blur(10px) contrast(2);
+    opacity: 0;
+  }
+}
+
 .completed {
-  animation: completeFood 500ms ease-in-out forwards;
+  animation: completeslot 500ms ease-in-out forwards;
 
   &::after {
-    animation: completeFoodAfter 500ms ease-in-out;
+    animation: completeslotAfter 500ms ease-in-out;
     animation-fill-mode: forwards;
     outline: unset;
   }
 }
 
-@keyframes completeFood {
+@keyframes completeslot {
   0% {
     background: radial-gradient(transparent 60%, var(--border-color) 61%), linear-gradient(0deg, #ffffff25 var(--stage-percentage), transparent var(--stage-percentage));
   }
@@ -154,7 +186,7 @@ $end: 8;
   }
 }
 
-@keyframes completeFoodAfter {
+@keyframes completeslotAfter {
   80% {
     opacity: 1;
   }
@@ -216,8 +248,10 @@ $end: 8;
       0 -2px 0 0 white,
       0 2px 0 0 white;
 
-    .food {
-      --cell-size: 24px;
+    .slot {
+      --cell-size: 2rem;
+      width: 2rem;
+      height: 2rem;
       --border-color: transparent;
     }
 
@@ -264,15 +298,16 @@ $end: 8;
   padding: 8px;
   cursor: pointer;
 
-  .food {
-    @extend .food;
-    @extend .food-1;
+  .slot {
+    @extend .slot;
+    @extend .slot-1;
 
-    --cell-size: 24px;
+    --cell-size: 3rem;
     --border-color: transparent;
     pointer-events: none;
+    width: 3rem;
+    height: 3rem;
 
-    background: black;
 
     .active {
       background: #333;

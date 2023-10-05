@@ -3,7 +3,7 @@ const domQueryAll = (q) => (document.querySelectorAll(q));
 const domCreateElem = (t, a) => (Object.assign(document.createElement(t), a));
 const sleep = async (duration) => (await new Promise(r => setTimeout(r, duration)))
 
-SLOT_BASE_CLASS = 'food';
+SLOT_BASE_CLASS = 'slot';
 
 class SlotType {
     constructor(typeId, name) {
@@ -59,9 +59,13 @@ class Slot {
         this.stage = Math.min(5, newValue);
         if(update) this.update();
     }
-    set(type, stage=1, update=false) {
+    async set(type, stage=1, update=false) {
         this.type = type;
         this.stage = stage;
+        if(type.name == 'empty') {
+            this.domElem.classList.add('removed');
+            await sleep(125);
+        }
         if(update) this.update();
     }
     copy(slot) {
@@ -100,6 +104,9 @@ class Grid {
         }
         domElem.style.gridTemplateColumns = 'auto '.repeat(width);
         domElem.style.gridTemplateRows = 'auto '.repeat(height);
+        const cellSize = 22;
+        domElem.style.width = `calc(${cellSize/width}rem*${width})`;
+        domElem.style.height = `calc(${cellSize/height}rem*${height})`;
     }
     async domUpdateSlot(slotIndex) {
         this.slots[slotIndex].update();
@@ -108,6 +115,11 @@ class Grid {
         for(let slotIndex = 0; slotIndex < this.slots.length; slotIndex++) {
             this.domUpdateSlot(slotIndex)
         }
+    }
+    domUpdateTool() {
+        domQueryAll('input[name="tool"]').forEach(el => {
+            el.checked = el.value == this.tool;
+        })
     }
     slotsGetCombinations(slotIndex, slotType=null, combinations=[]) {
         const { width, height } = this;
@@ -175,7 +187,9 @@ class Grid {
     async slotsFall() {
         const { width, slotTypes } = this;
         const reversed = this.slots.slice().reverse();
+        const sleepSlepDuration = 25;
         let sleepDuration = 250;
+        let lastRow = null;
 
         for(let revIndex = 0; revIndex < reversed.length; revIndex++) {
             const slotIndex = reversed.length - revIndex - 1;
@@ -185,18 +199,23 @@ class Grid {
                 const slotAboveIndex = this.slotsGetFirstAbove(slotIndex);
 
                 if(row == 0 || row != 0 && slotAboveIndex == false) {
-                    this.slots[slotIndex].set(this.__randomType(), 1, true);
-                    await sleep(25);
-                    sleepDuration -= 25;
+                    this.slots[slotIndex].set(this.__randomType(), 1);
+                    await sleep(sleepSlepDuration);
+                    sleepDuration -= sleepSlepDuration;
                 } else {
                     this.slots[slotIndex].copy(this.slots[slotAboveIndex]);
-                    this.slots[slotAboveIndex].set(slotTypes[0], 1, true);
-                    await sleep(25);
-                    sleepDuration -= 25;
+                    this.slots[slotAboveIndex].set(slotTypes[0], 1);
+                    await sleep(sleepSlepDuration);
+                    sleepDuration -= sleepSlepDuration;
                     this.slots[slotIndex].update()
                 }
-                await sleep(25);
-                sleepDuration -= 25;
+                await sleep(sleepSlepDuration);
+                sleepDuration -= sleepSlepDuration;
+            }
+            if(lastRow != row) {
+                lastRow = row;
+                this.domUpdateAll();
+                await sleep(sleepSlepDuration)
             }
         }
         await sleep(sleepDuration);
@@ -210,7 +229,7 @@ class Grid {
 
         const combinations = this.slotsGetCombinations(slotIndex, slotType, []);
 
-        let sleepDuration = 125;
+        let sleepDuration = 250;
 
         if(combinations.length >= 3) {
             const nextStage = combinations.reduce((sum, slotIndex) => {
@@ -261,9 +280,13 @@ class Grid {
         switch(this.tool) {
             case 'hoe':
                 await this.handleHoeSlot(slotIndex);
+                this.tool = 'combine';
+                this.domUpdateTool();
             break;
             case 'hose':
                 await this.handleHoseSlot(slotIndex);
+                this.tool = 'combine';
+                this.domUpdateTool();
             break;
             default:
                 await this.handleCombineSlot(slotIndex);
@@ -301,12 +324,11 @@ class InventoryItem {
         this.domContent = domContent;
     }
     update() {
-        const { type, ammount, value } = this;
-        const { name } = type;
-        this.domContent.innerHTML = `<p>${name}</p><p data-inventory-type="${name}">${ammount}</p><a>Sell +${value} ⛃</a>`
+        const { ammount } = this;
+        this.domContent.querySelector('[data-inventory-type]').innerHTML = ammount;
     }
     incrementAmmount(ammount, domUpdate=true) {
-        this.ammount += ammount;
+        this.ammount = Math.max(0, this.ammount + ammount);
         if(domUpdate) this.update();
     }
 }
@@ -323,16 +345,32 @@ class Game {
         this.domInventoryParent = domQuery('#counters-wrap');
         this.inventoryInit();
     }
-    inventoryInit() {
+    domUpdateGold() {
+        domQuery('[data-gold]').innerHTML = this.gold;
+    }
+    sellInventory(slotType) {
+        console.log('selling');
+        console.log(slotType);
+        if(!(slotType.name in this.inventory) || this.inventory[slotType.name].ammount < 1) return;
+        this.inventory[slotType.name].incrementAmmount(-1);
+        this.gold += this.inventory[slotType.name].value;
+        this.domUpdateGold();
+    }
+    inventoryInitItem(slotType) {
         const { domInventoryParent } = this;
-        this.slotTypes.forEach(slotType => {
-            if(slotType.name == 'empty') return;
+        if(slotType.name == 'empty') return;
+        if(!(slotType.name in this.inventory)) {
             this.inventory[slotType.name] = new InventoryItem(domInventoryParent, slotType, 0, 2);
-        });
+            this.inventory[slotType.name].domContent.querySelector('a').addEventListener('click', () => {
+                this.sellInventory(slotType);
+            });
+        }
+    }
+    inventoryInit() {
+        this.slotTypes.forEach(slotType => this.inventoryInitItem(slotType));
     }
     inventoryAdd(slotType) {
-        const { domInventoryParent } = this;
-        if(!(slotType.name in this.inventory)) this.inventory[slotType.name] = new InventoryItem(domInventoryParent, slotType, 0, 2);
+        this.inventoryInitItem(slotType);
         this.inventory[slotType.name].incrementAmmount(1);
     }
     combineCallback(slot){
