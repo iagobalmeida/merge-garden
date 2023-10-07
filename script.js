@@ -130,7 +130,7 @@ class Grid {
         const nexts = [];
 
         if(row > 0){
-            const up = (slotIndex - (row * width)) + ((row - 1) * width);
+            const up = (slotIndex - width);
             if(this.slots[up] !== undefined && this.slots[up].type.name == slotType.name && !combinations.includes(up)) {
                 combinations.push(up);
                 nexts.push(up);
@@ -138,7 +138,7 @@ class Grid {
         }
 
         if(row < height - 1) {
-            const down = (slotIndex - (row * width)) + ((row + 1) * width);
+            const down = (slotIndex + width);
             if(this.slots[down] !== undefined && this.slots[down].type.name == slotType.name && !combinations.includes(down)) {
                 combinations.push(down);
                 nexts.push(down);
