@@ -26,6 +26,19 @@
     flex-direction: column;
   }
 
+  .points-counter {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    z-index: 99;
+    padding: 12px;
+    border-radius: 8px;
+    bottom: 16%;
+    border: 2px solid white;
+    transition: all 125ms ease-in-out;
+    background: #222;
+  }
+
   .combo-counter {
     color: white;
     font-size: 20px;
@@ -216,6 +229,9 @@
   </div>
   <div class="grid">
     0x
+  </div>
+  <div class="points-counter">
+    0.00
   </div>
 </body>
 <script src="dom_based.js"></script>

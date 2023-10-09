@@ -1,5 +1,7 @@
 const main = async () => {
   const domComboCounter = document.querySelector(".combo-counter");
+  const domPointsCounter = document.querySelector(".points-counter");
+  let points = 0;
   const domGrid = document.querySelector(".grid");
   const gridStyle = getComputedStyle(domGrid);
   const gridWidth = gridStyle.getPropertyValue("--col-size");
@@ -207,6 +209,11 @@ const main = async () => {
     domComboCounter.classList.add(`combo-${classValue}`);
   };
 
+  const domUpdatePointsCounter = (value) => {
+    points += value;
+    domPointsCounter.innerHTML = `${points.toFixed(2)}`;
+  }
+
   const handleClickSlot = async (domSlot, combo = 0) => {
     if (animating) return;
     animating = true;
@@ -243,6 +250,7 @@ const main = async () => {
         slot.classList.remove("glow");
       }
       combo += 1;
+      domUpdatePointsCounter(combo);
       domUpdateComboCounter(combo);
     }
 
