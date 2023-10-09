@@ -29,8 +29,6 @@ const main = async () => {
     pointElem.style.left = slotStyle.getPropertyValue("left");
     pointElem.style.top = slotStyle.getPropertyValue("top");
     pointElem.style.borderColor = domSlot.style.background;
-    console.log(domSlot.style.top);
-    console.log(domSlot.style.left);
     domGrid.appendChild(pointElem);
     setTimeout(() => {
       pointElem.remove();
@@ -209,8 +207,50 @@ const main = async () => {
     domComboCounter.classList.add(`combo-${classValue}`);
   };
 
+  const getAudio = (source) => {
+    const audio = new Audio();
+    audio.src = source;
+    audio.preload = 'auto';
+    audio.playbackRate = 3;
+    return audio;
+  }
+
+  const audios = [
+    getAudio('./sounds/C4 Soft.wav'),
+    getAudio('./sounds/D_4 Soft.wav'),
+    getAudio('./sounds/D4 Soft.wav'),
+    getAudio('./sounds/F3 Soft.wav'),
+    getAudio('./sounds/F4 Soft.wav'),
+  ]
+
+  const audioBuffer = [];
+  setInterval(() => {
+    if(audioBuffer.length >= 7) {
+        audioBuffer[0].currentTime = 0;
+        audioBuffer[0].play();
+        audioBuffer[1].currentTime = 0;
+        audioBuffer[1].play();
+        audioBuffer[2].currentTime = 0;
+        audioBuffer[2].play();
+        audioBuffer.splice(0, 3);
+    } else if(audioBuffer.length >= 4) {
+        audioBuffer[0].currentTime = 0;
+        audioBuffer[0].play();
+        audioBuffer[1].currentTime = 0;
+        audioBuffer[1].play();
+        audioBuffer.splice(0, 2);
+    } else if(audioBuffer.length) {
+        if(audioBuffer[0].paused) {
+            audioBuffer[0].currentTime = 0;
+            audioBuffer[0].play();
+            audioBuffer.splice(0, 1)
+        }
+    }
+  }, 250);
+
   const domUpdatePointsCounter = (value) => {
     points += value;
+    audioBuffer.push(audios[Math.floor(Math.random()*audios.length)]);
     domPointsCounter.innerHTML = `${points.toFixed(2)}`;
   }
 
