@@ -1,44 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Food Merge</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Based</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 </head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Pixelify Sans", cursive;
+  }
+
+  body {
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+  }
+
+  .combo-counter {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    z-index: 99;
+    padding: 12px;
+    border-radius: 8px;
+    top: 16%;
+    border: 2px solid white;
+    transition: all 125ms ease-in-out;
+    --combo-stage: 0;
+    --background-perc: calc(calc(4 - var(--combo-stage))*25%);
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+    --rotate-duration: calc(calc(6 - var(--combo-stage))*.25s);
+    background: linear-gradient(#222 var(--background-perc), red);
+    animation: comboShake ease-in-out infinite alternate-reverse;
+    animation-duration: var(--rotate-duration);
+  }
+
+  @keyframes comboShake {
+    0% {
+      transform: rotateZ(var(--rotate-start));
+      filter: hue-rotate(0deg);
+    }
+
+    100% {
+      transform: rotateZ(var(--rotate-end));
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  .combo-1 {
+    --combo-stage: 1;
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+  }
+
+  .combo-2 {
+    --combo-stage: 2;
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+  }
+
+  .combo-3 {
+    --combo-stage: 3;
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+  }
+
+  .combo-4 {
+    --combo-stage: 4;
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+    background: linear-gradient(white var(--background-perc), red);
+    color: black;
+  }
+
+  .combo-5 {
+    --combo-stage: 5;
+    --rotate-start: calc(var(--combo-stage) * -3deg);
+    --rotate-end: calc(var(--combo-stage) * 3deg);
+  }
+
+  .grid {
+    width: auto;
+    height: 60vh;
+    aspect-ratio: 1/1;
+    position: relative;
+    background: black;
+    --row-size: 7;
+    --col-size: 7;
+    overflow: hidden;
+    border: 2px solid white;
+    gap: 8px;
+    transition: all 500ms ease-in-out;
+  }
+
+  @media screen and (max-width: 600px) {
+    .grid {
+      width: 90vw;
+      height: auto;
+    }
+  }
+
+  .grid.super {
+    transform: rotateZ(180deg);
+  }
+
+  .grid .slot {
+    --slot-pos-x: 0;
+    --slot-pos-y: 0;
+    --slot-width: calc(100% / var(--col-size));
+    --slot-height: calc(100% / var(--row-size));
+    position: absolute;
+    left: calc(var(--slot-width)*var(--slot-pos-x));
+    top: calc(var(--slot-height)*var(--slot-pos-y));
+    width: var(--slot-width);
+    height: var(--slot-height);
+    transition: top 125ms linear, transform 50ms ease-in-out;
+    background: #222;
+  }
+
+  .grid .slot::after {
+    content: '';
+    position: absolute;
+    background: linear-gradient(45deg, #ffffff15, #00000025);
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+  }
+
+  .grid .slot.shine {
+    filter: contrast(1.7);
+    transform: scale(0.6) rotate(45deg) !important;
+  }
+
+  .grid .slot.glow {
+    outline: 4px solid white;
+    border-radius: 100%;
+    filter: contrast(2.5);
+    transform: scale(0.6) rotate(45deg) !important;
+  }
+
+  .grid .slot.shine::after {
+    background: linear-gradient(45deg, #00000025, #ffffff15)
+  }
+
+  .grid .slot.shine::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(-45deg, transparent, #ffffff50, transparent);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    animation: shine 5s ease-in-out infinite alternate-reverse;
+    background-size: 300% 300%;
+  }
+
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+
+    50% {
+      background-position: 100% 100%;
+    }
+
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+
+  .points {
+    animation: pointsGrow 250ms ease-in-out forwards;
+    position: absolute;
+    border-radius: 100%;
+    border: 8px dotted white;
+    --slot-width: calc(100% / var(--col-size));
+    --slot-height: calc(100% / var(--row-size));
+    width: var(--slot-width);
+    height: var(--slot-height);
+    z-index: 99;
+  }
+
+  @keyframes pointsGrow {
+    0% {
+      transform: scale(0) translate(-25%, -25%);
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(1.5) translate(-12%, -12%);
+      opacity: 0;
+    }
+  }
+</style>
 
 <body>
-  <div id="counters-wrap" class="counters"></div>
+  <div class="combo-counter combo-2">
+    20x
+  </div>
   <div class="grid">
+    0x
   </div>
-  <div class="settings">
-    <div class="gold-wrapper">
-      <label data-gold="0">0</label>
-      <label>⛃</label>
-    </div>
-    <label class="tool" for="toggle-combine">
-      <!-- <span>Combine</span> -->
-      <div class="slot combine"></div>
-      <input type="radio" name="tool" id="toggle-combine" value="combine" checked>
-    </label>
-    <label class="tool" for="toggle-hoe">
-      <div class="slot hoe"></div>
-      <span>2 ⛃</span>
-      <input type="radio" name="tool" id="toggle-hoe" value="hoe">
-    </label>
-    <label class="tool" for="toggle-hose">
-      <div class="slot hose"></div>
-      <span>2 ⛃</span>
-      <input type="radio" name="tool" id="toggle-hose" value="hose">
-    </label>
-  </div>
-  <script src="script.js"></script>
-
 </body>
+<script src="dom_based.js"></script>
 
 </html>

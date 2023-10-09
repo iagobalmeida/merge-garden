@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Food Merge</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div id="counters-wrap" class="counters"></div>
+  <div class="grid">
+  </div>
+  <div class="settings">
+    <div class="gold-wrapper">
+      <label data-gold="0">0</label>
+      <label>⛃</label>
+    </div>
+    <a href="dom_based.html">Dom Based</a>
+    <label class="tool" for="toggle-combine">
+      <!-- <span>Combine</span> -->
+      <div class="slot combine"></div>
+      <input type="radio" name="tool" id="toggle-combine" value="combine" checked>
+    </label>
+    <label class="tool" for="toggle-hoe">
+      <div class="slot hoe"></div>
+      <span>2 ⛃</span>
+      <input type="radio" name="tool" id="toggle-hoe" value="hoe">
+    </label>
+    <label class="tool" for="toggle-hose">
+      <div class="slot hose"></div>
+      <span>2 ⛃</span>
+      <input type="radio" name="tool" id="toggle-hose" value="hose">
+    </label>
+  </div>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
