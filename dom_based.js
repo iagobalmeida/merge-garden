@@ -198,12 +198,13 @@ const main = async () => {
   const domUpdateComboCounter = (value) => {
     domComboCounter.innerHTML = `${value}x`;
     const size = 20 + Math.floor((value * 20) / 50);
-    const classValue = Math.floor(value / 10).toString();
+    const classValue = Math.min(5, Math.floor(value / 10).toString());
     domComboCounter.style.fontSize = `${size}px`;
     domComboCounter.classList.remove("combo-1");
     domComboCounter.classList.remove("combo-2");
     domComboCounter.classList.remove("combo-3");
     domComboCounter.classList.remove("combo-4");
+    domComboCounter.classList.remove("combo-5");
     domComboCounter.classList.add(`combo-${classValue}`);
   };
 
@@ -225,32 +226,32 @@ const main = async () => {
 
   const audioBuffer = [];
   setInterval(() => {
-    if(audioBuffer.length >= 7) {
-        audioBuffer[0].currentTime = 0;
-        audioBuffer[0].play();
-        audioBuffer[1].currentTime = 0;
-        audioBuffer[1].play();
-        audioBuffer[2].currentTime = 0;
-        audioBuffer[2].play();
-        audioBuffer.splice(0, 3);
-    } else if(audioBuffer.length >= 4) {
-        audioBuffer[0].currentTime = 0;
-        audioBuffer[0].play();
-        audioBuffer[1].currentTime = 0;
-        audioBuffer[1].play();
-        audioBuffer.splice(0, 2);
-    } else if(audioBuffer.length) {
-        if(audioBuffer[0].paused) {
-            audioBuffer[0].currentTime = 0;
-            audioBuffer[0].play();
-            audioBuffer.splice(0, 1)
-        }
-    }
+    // if(audioBuffer.length >= 7) {
+    //     audioBuffer[0].currentTime = 0;
+    //     audioBuffer[0].play();
+    //     audioBuffer[1].currentTime = 0;
+    //     audioBuffer[1].play();
+    //     audioBuffer[2].currentTime = 0;
+    //     audioBuffer[2].play();
+    //     audioBuffer.splice(0, 3);
+    // } else if(audioBuffer.length >= 4) {
+    //     audioBuffer[0].currentTime = 0;
+    //     audioBuffer[0].play();
+    //     audioBuffer[1].currentTime = 0;
+    //     audioBuffer[1].play();
+    //     audioBuffer.splice(0, 2);
+    // } else if(audioBuffer.length) {
+    //     if(audioBuffer[0].paused) {
+    //         audioBuffer[0].currentTime = 0;
+    //         audioBuffer[0].play();
+    //         audioBuffer.splice(0, 1)
+    //     }
+    // }
   }, 250);
 
   const domUpdatePointsCounter = (value) => {
     points += value;
-    audioBuffer.push(audios[Math.floor(Math.random()*audios.length)]);
+    // audioBuffer.push(audios[Math.floor(Math.random()*audios.length)]);
     domPointsCounter.innerHTML = `${points.toFixed(2)}`;
   }
 
@@ -302,7 +303,7 @@ const main = async () => {
     animating = false;
     for (const slot of glows) {
       const _combo = await handleClickSlot(slot, combo);
-      combo += _combo;
+      combo = _combo;
     }
     return combo;
   };
