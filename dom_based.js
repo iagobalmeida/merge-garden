@@ -82,11 +82,15 @@ const main = async () => {
   };
 
   const slotsGetGlowNeighbours = (domSlots, domSlot, neighbours = []) => {
-    const callback = (slot) => {
-      return slot.style.background == domSlot.style.background;
-    }
+    const callback = (slot) => (slot.style.background == domSlot.style.background);
     return slotsGetConditional(domSlots, domSlot, callback, neighbours);
   };
+
+  const slotsDistances = (slotA, slotB) => {
+    const slotAPos = domSlotGetPos(slotA);
+    const slotBPos = domSlotGetPos(slotB);
+    return Math.sqrt(Math.pow(Math.abs(slotAPos.posX-slotBPos.posX),2)+Math.pow(Math.abs(slotAPos.posY-slotBPos.posY),2));
+  }
 
   const slotsGetShineNeighbours = (domSlots, domSlot, neighbours = []) => {
     const { posX, posY } = domSlotGetPos(domSlot);
@@ -94,7 +98,9 @@ const main = async () => {
       const _pos = domSlotGetPos(slot);
       return (posX == _pos.posX || posY == _pos.posY)
     }
-    return slotsGetConditional(domSlots, domSlot, callback, neighbours);
+    const slots = slotsGetConditional(domSlots, domSlot, callback, neighbours);
+    slots.sort((a,b) => slotsDistances(domSlot, a) - slotsDistances(domSlot, b));
+    return slots
   };
 
   const slotsGetNeighbours = (domSlots, domSlot, neighbours = []) => {
@@ -188,7 +194,7 @@ const main = async () => {
     if (neighbours.length < 3) return (animating = false);
     const glows = [];
     for (const slot of neighbours) {
-      if(slot == domSlot && !isShine && !isGlow && neighbours.length >= 6) {
+      if(slot == domSlot && !isShine && !isGlow && neighbours.length >= 8) {
           slot.classList.add("glow");
       } else if(slot == domSlot && !isShine && !isGlow && neighbours.length >= 4) {
         slot.classList.add("shine");
