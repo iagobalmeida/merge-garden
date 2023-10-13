@@ -1,33 +1,33 @@
+Element.prototype.getStyleProperty = function(...properties) {
+  const computedStyle = getComputedStyle(this);
+  return properties.map(p => (computedStyle.getPropertyValue(p)));
+}
+
 const main = async () => {
+  const sleep = async (duration) => await new Promise((r) => setTimeout(r, duration));
   const domComboCounter = document.querySelector(".combo-counter");
   const domPointsCounter = document.querySelector(".points-counter");
-  let points = 0;
   const domGrid = document.querySelector(".grid");
-  const gridStyle = getComputedStyle(domGrid);
-  const gridWidth = gridStyle.getPropertyValue("--col-size");
-  const gridHeight = gridStyle.getPropertyValue("--row-size");
-  const sleep = async (duration) =>
-    await new Promise((r) => setTimeout(r, duration));
-  let animating = false;
+  const [width, height] = domGrid.getStyleProperty(['--col-size', '--row-size']);
+  const gridWidth = width || 7;
+  const gridHeight = height || 7;
   const colors = [
-    //'#473335',
-    //'#b0413e',
     "#c84639",
-    //'#ce763b',
     "#e2af47",
     "#e9d6af",
     "#6bb4b1",
     "#32687a",
   ];
-  let colorsTemp = colors.slice();
-  let lastColor = 0;
+
+  let points = 0;
+  let animating = false;
 
   const particlesShowPoint = (domSlot) => {
-    const slotStyle = getComputedStyle(domSlot);
     const pointElem = document.createElement("div");
     pointElem.classList.add("points");
-    pointElem.style.left = slotStyle.getPropertyValue("left");
-    pointElem.style.top = slotStyle.getPropertyValue("top");
+    const [left, top] = domSlot.getStyleProperty('left', 'top');
+    pointElem.style.left = left;
+    pointElem.style.top = top;
     pointElem.style.borderColor = domSlot.style.background;
     domGrid.appendChild(pointElem);
     setTimeout(() => {
@@ -35,63 +35,41 @@ const main = async () => {
     }, 1000);
   };
 
-  const randomColor = () => {
-    if (Math.random() >= 0.25) {
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-    if (lastColor < colors.length - 1) {
-      lastColor += 1;
-    } else {
-      colorsTemp = colorsTemp.reverse();
-      lastColor = 0;
-    }
-    return colors[lastColor];
+  const randomColor = (posX) => {
+    const random = colors[Math.floor(Math.random() * colors.length)];
+    const topSlot = getSlotAt({ posX: posX, posY: 0});
+    if (Math.random() >= 0.25) return random;
+    return topSlot ? topSlot.style.background : random;
   };
 
-  const getDomSlots = () => {
-    return document.querySelectorAll(".grid .slot");
-  };
+  const getDomSlots = () => (document.querySelectorAll(".grid .slot"));
 
   const domSlotGetPos = (domSlot) => {
-    const computedStyle = getComputedStyle(domSlot);
-    const posX = parseInt(computedStyle.getPropertyValue("--slot-pos-x"));
-    const posY = parseInt(computedStyle.getPropertyValue("--slot-pos-y"));
-    return { posX, posY };
+    const [posX, posY] = domSlot.getStyleProperty('--slot-pos-x', '--slot-pos-y');
+    return { posX: parseInt(posX), posY: parseInt(posY) };
   };
 
   const domSlotSetPos = (domSlot, { posX, posY }) => {
     domSlot.style.opacity = posY >= 0 ? 1 : 0;
     domSlot.style.setProperty("--slot-pos-x", posX);
     domSlot.style.setProperty("--slot-pos-y", posY);
+    domSlot.setAttribute('pos-x', posX);
+    domSlot.setAttribute('pos-y', posY);
   };
 
-  const getSlotAt = (domSlots, { posX, posY }) => {
-    const positions = Array.from(domSlots).map((domSlot) =>
-      domSlotGetPos(domSlot)
-    );
-    for (let [positionIndex, position] of positions.entries()) {
-      if (position.posX == posX && position.posY == posY) {
-        return domSlots[positionIndex];
-      }
-    }
-    return null;
+  const getSlotAt = ({ posX, posY }) => {
+    const domSlot = domGrid.querySelector(`[pos-x="${posX}"][pos-y="${posY}"]`);
+    return domSlot;
   };
 
-  const slotsGetGlowNeighbours = (domSlots, domSlot, neighbours = []) => {
+  const slotsGetConditional = (domSlots, domSlot, filterCallback, neighbours=[]) => {
     if (!neighbours.includes(domSlot)) neighbours.push(domSlot);
     const shines = [];
-    const glows = [];
     for (const slot of domSlots) {
       const _shine = slot.classList.contains("shine");
-      const _glow = slot.classList.contains("glow");
-      if (
-        slot.style.background == domSlot.style.background &&
-        !neighbours.includes(slot)
-      ) {
-        if (_shine && !_glow) {
+      if (filterCallback(slot) && !neighbours.includes(slot)) {
+        if (_shine) {
           shines.push(slot);
-        } else if (_glow) {
-          glows.push(slot);
         } else {
           neighbours.push(slot);
         }
@@ -100,41 +78,23 @@ const main = async () => {
     for (const shine of shines) {
       neighbours.concat(slotsGetShineNeighbours(domSlots, shine, neighbours));
     }
-    for (const glow of glows) {
-      neighbours.concat(slotsGetGlowNeighbours(domSlots, glow, neighbours));
-    }
     return neighbours;
   };
 
-  const slotsGetShineNeighbours = (domSlots, domSlot, neighbours = []) => {
-    if (!neighbours.includes(domSlot)) neighbours.push(domSlot);
-    const { posX, posY } = domSlotGetPos(domSlot);
-    const shines = [];
-    const glows = [];
-    for (const slot of domSlots) {
-      const _pos = domSlotGetPos(slot);
-      const _shine = slot.classList.contains("shine");
-      const _glow = slot.classList.contains("glow");
-      if (posX == _pos.posX || posY == _pos.posY) {
-        if (!neighbours.includes(slot)) {
-          if (_glow) {
-            glows.push(slot);
-          } else if (_shine) {
-            shines.push(slot);
-          } else {
-            neighbours.push(slot);
-          }
-        }
-      }
+  const slotsGetGlowNeighbours = (domSlots, domSlot, neighbours = []) => {
+    const callback = (slot) => {
+      return slot.style.background == domSlot.style.background;
     }
-    for (const shine of shines) {
-      neighbours.concat(slotsGetShineNeighbours(domSlots, shine, neighbours));
-    }
-    for (const glow of glows) {
-      neighbours.concat(slotsGetGlowNeighbours(domSlots, glow, neighbours));
-    }
+    return slotsGetConditional(domSlots, domSlot, callback, neighbours);
+  };
 
-    return neighbours;
+  const slotsGetShineNeighbours = (domSlots, domSlot, neighbours = []) => {
+    const { posX, posY } = domSlotGetPos(domSlot);
+    const callback = (slot) => {
+      const _pos = domSlotGetPos(slot);
+      return (posX == _pos.posX || posY == _pos.posY)
+    }
+    return slotsGetConditional(domSlots, domSlot, callback, neighbours);
   };
 
   const slotsGetNeighbours = (domSlots, domSlot, neighbours = []) => {
@@ -147,17 +107,17 @@ const main = async () => {
       !n.classList.contains("shine") &&
       !n.classList.contains("glow");
 
-    const left = getSlotAt(domSlots, { posX: posX - 1, posY });
-    if (_validNeighbour(left)) closest.push(left);
+    const directions = [
+      {x:-1,y:0},
+      {x:0,y:-1},
+      {x:+1,y:0},
+      {x:0,y:+1},
+    ]
 
-    const right = getSlotAt(domSlots, { posX: posX + 1, posY });
-    if (_validNeighbour(right)) closest.push(right);
-
-    const top = getSlotAt(domSlots, { posX, posY: posY - 1 });
-    if (_validNeighbour(top)) closest.push(top);
-
-    const bottom = getSlotAt(domSlots, { posX, posY: posY + 1 });
-    if (_validNeighbour(bottom)) closest.push(bottom);
+    directions.forEach(d => {
+      const _slot = getSlotAt({posX:posX+d.x, posY:posY+d.y});
+      if(_validNeighbour(_slot)) closest.push(_slot);
+    });
 
     if (!neighbours.includes(domSlot)) {
       neighbours.push(domSlot);
@@ -185,7 +145,7 @@ const main = async () => {
       domSlot.style.opacity = posY >= 0 ? 1 : 0;
       if (
         posY < gridHeight - 1 &&
-        getSlotAt(domSlots, { posX, posY: posY + 1 }) == null
+        getSlotAt({ posX, posY: posY + 1 }) == null
       ) {
         posY += 1;
         fell = true;
@@ -200,59 +160,23 @@ const main = async () => {
     const size = 20 + Math.floor((value * 20) / 50);
     const classValue = Math.min(5, Math.floor(value / 10).toString());
     domComboCounter.style.fontSize = `${size}px`;
-    domComboCounter.classList.remove("combo-1");
-    domComboCounter.classList.remove("combo-2");
-    domComboCounter.classList.remove("combo-3");
-    domComboCounter.classList.remove("combo-4");
-    domComboCounter.classList.remove("combo-5");
+    domComboCounter.classList.remove("combo-1", "combo-2", "combo-3", "combo-4", "combo-5");
     domComboCounter.classList.add(`combo-${classValue}`);
   };
 
-  const getAudio = (source) => {
-    const audio = new Audio();
-    audio.src = source;
-    audio.preload = 'auto';
-    audio.playbackRate = 3;
-    return audio;
-  }
-
-  const audios = [
-    getAudio('./sounds/C4 Soft.wav'),
-    getAudio('./sounds/D_4 Soft.wav'),
-    getAudio('./sounds/D4 Soft.wav'),
-    getAudio('./sounds/F3 Soft.wav'),
-    getAudio('./sounds/F4 Soft.wav'),
-  ]
-
-  const audioBuffer = [];
-  setInterval(() => {
-    // if(audioBuffer.length >= 7) {
-    //     audioBuffer[0].currentTime = 0;
-    //     audioBuffer[0].play();
-    //     audioBuffer[1].currentTime = 0;
-    //     audioBuffer[1].play();
-    //     audioBuffer[2].currentTime = 0;
-    //     audioBuffer[2].play();
-    //     audioBuffer.splice(0, 3);
-    // } else if(audioBuffer.length >= 4) {
-    //     audioBuffer[0].currentTime = 0;
-    //     audioBuffer[0].play();
-    //     audioBuffer[1].currentTime = 0;
-    //     audioBuffer[1].play();
-    //     audioBuffer.splice(0, 2);
-    // } else if(audioBuffer.length) {
-    //     if(audioBuffer[0].paused) {
-    //         audioBuffer[0].currentTime = 0;
-    //         audioBuffer[0].play();
-    //         audioBuffer.splice(0, 1)
-    //     }
-    // }
-  }, 250);
 
   const domUpdatePointsCounter = (value) => {
     points += value;
-    // audioBuffer.push(audios[Math.floor(Math.random()*audios.length)]);
     domPointsCounter.innerHTML = `${points.toFixed(2)}`;
+  }
+
+  const handleClickGetNeighbours = (domSlot) => {
+    const domSlots = getDomSlots();
+    const isShine = domSlot.classList.contains("shine");
+    const isGlow = domSlot.classList.contains("glow");
+    if(isGlow) return slotsGetGlowNeighbours(domSlots, domSlot);
+    if(isShine) return slotsGetShineNeighbours(domSlots, domSlot);
+    return slotsGetNeighbours(domSlots, domSlot).reverse();
   }
 
   const handleClickSlot = async (domSlot, combo = 0) => {
@@ -260,22 +184,13 @@ const main = async () => {
     animating = true;
     const isShine = domSlot.classList.contains("shine");
     const isGlow = domSlot.classList.contains("glow");
-    const neighbours = isShine
-      ? slotsGetShineNeighbours(getDomSlots(), domSlot)
-      : isGlow
-      ? slotsGetGlowNeighbours(getDomSlots(), domSlot)
-      : slotsGetNeighbours(getDomSlots(), domSlot).reverse();
+    const neighbours = handleClickGetNeighbours(domSlot);
     if (neighbours.length < 3) return (animating = false);
     const glows = [];
     for (const slot of neighbours) {
-      if (slot == domSlot && !isShine && !isGlow && neighbours.length >= 6) {
-        slot.classList.add("glow");
-      } else if (
-        slot == domSlot &&
-        !isShine &&
-        !isGlow &&
-        neighbours.length >= 4
-      ) {
+      if(slot == domSlot && !isShine && !isGlow && neighbours.length >= 6) {
+          slot.classList.add("glow");
+      } else if(slot == domSlot && !isShine && !isGlow && neighbours.length >= 4) {
         slot.classList.add("shine");
       } else if (slot != domSlot && slot.classList.contains("glow")) {
         glows.push(slot);
@@ -286,9 +201,8 @@ const main = async () => {
         await sleep(50);
         domSlotSetPos(slot, { posX, posY: -2 });
         slot.style.transform = "scale(1)";
-        slot.style.background = randomColor();
-        slot.classList.remove("shine");
-        slot.classList.remove("glow");
+        slot.style.background = randomColor(posX);
+        slot.classList.remove("shine", "glow");
       }
       combo += 1;
       domUpdatePointsCounter(combo);
@@ -317,7 +231,9 @@ const main = async () => {
       domSlot.classList.add("slot");
       domSlot.style.setProperty("--slot-pos-y", row);
       domSlot.style.setProperty("--slot-pos-x", col);
-      domSlot.style.background = randomColor();
+      domSlot.setAttribute('pos-y', row);
+      domSlot.setAttribute('pos-x', col);
+      domSlot.style.background = randomColor(col);
       domSlot.addEventListener("click", async () => {
         handleClickSlot(domSlot);
       });
@@ -349,8 +265,7 @@ const main = async () => {
         changes += 1;
         slot.style.transform = "scale(1)";
         slot.style.background = color;
-        slot.classList.remove("shine");
-        slot.classList.remove("glow");
+        slot.classList.remove("shine", "glow");
         domUpdateComboCounter(combo);
         await sleep(25);
         sleepTime -= 25;
@@ -361,10 +276,6 @@ const main = async () => {
       animating = false;
     }
   };
-
-  screen.orientation.addEventListener("change", function (e) {
-    handleComboCounterClick();
-  });
   domComboCounter.addEventListener("click", async () => {
     await handleComboCounterClick();
   });
